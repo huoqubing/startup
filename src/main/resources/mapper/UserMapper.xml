@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="userMapper">
+
+	<cache type="org.mybatis.caches.oscache.OSCache"/>
+	
+	<sql id="base_column">
+		id, loginName,password,phone,email,createTime,updateTime,version,status
+	</sql>
+
+	<insert id="add" parameterType="user">
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into user (loginName,password,phone,email,createTime,updateTime,version,status)
+		values (#{loginName},#{password},#{phone},#{email},#{createTime},#{updateTime},#{version},#{status})
+	</insert>
+	<insert id="addUserRole" parameterType="userRole">
+		insert into user_role (userId,roleId)
+		values (#{userId},#{roleId})
+	</insert>
+
+	<delete id="deleteUserRoleByUserId" parameterType="int">
+		delete from user_role where userId
+		= #{id}
+	</delete>
+	
+	<select id="getUserRoleById"  resultType="userRole" parameterType="int">
+		select 
+		*
+		from user_role
+		<where>
+			userId = #{id}
+		</where>
+	</select>
+	
+	<delete id="deleteById" parameterType="int">
+		delete from user where id
+		= #{id}
+	</delete>
+
+	<delete id="deleteByIds" parameterType="java.util.List">
+		delete from user where id in
+		<foreach collection="list" index="index" item="id" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<!-- 增加乐观锁 version -->
+	<update id="update" parameterType="user" >
+		update user
+		<set>
+			phone = #{phone},
+			email = #{email},
+			updateTime = #{updateTime},
+			status = #{status},
+			version = #{version}+1
+		</set>
+		where id = #{id}
+	</update>
+	
+	<update id="updatePsw" parameterType="user" >
+		update user
+		<set>
+			password = #{password},
+			updateTime = #{updateTime},
+			version = #{version}+1
+		</set>
+		where id = #{id}
+	</update>
+
+	<select id="getById" parameterType="int" resultType="user" useCache="false">
+		select
+		<include refid="base_column" />
+		from user where id = #{id}
+	</select>
+
+	<select id="login" parameterType="user" resultType="user" useCache="false">
+		select
+		<include refid="base_column" />
+		from user
+		<where>
+			loginName = #{loginName} and password = #{password} and status='1'
+		</where>
+	</select>
+	
+	<select id="getByLoginName"  resultType="user" parameterType="int">
+		select 
+		<include refid="base_column" />
+		from user
+		<where>
+			loginName = #{loginName} and status='1'
+		</where>
+	</select>
+	
+	<select id="getList" parameterType="user" resultType="user" useCache="false">
+		select
+		<include refid="base_column" />
+		from user 
+		<where>
+			<if test="loginName != null and loginName != ''">
+				and loginName like concat('%',#{loginName},'%')
+			</if>
+			<if test="phone != null and phone != ''">
+				and phone like concat('%',#{phone},'%')
+			</if>
+		</where>
+		order by updatetime desc;
+	</select>
+	
+	<select id="getCount" parameterType="user" resultType="long" useCache="false">
+		select count(*) from user 
+		<where>
+			<if test="loginName != null and loginName != ''">
+				and loginName like concat('%',#{loginName},'%')
+			</if>
+			<if test="phone != null and phone != ''">
+				and phone like concat('%',#{phone},'%')
+			</if>
+		</where>
+	</select>
+
+</mapper>

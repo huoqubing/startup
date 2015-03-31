@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="smsRecordMapper">
+
+	<cache type="org.mybatis.caches.oscache.OSCache"/>
+
+
+	<delete id="deleteById" parameterType="int">
+		delete from sms_record where id
+		= #{id}
+	</delete>
+
+	<delete id="deleteByIds" parameterType="java.util.List">
+		delete from sms_record where id in
+		<foreach collection="list" index="index" item="id" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+
+	<select id="getById" parameterType="int" resultType="smsRecord" useCache="false">
+		select *
+		from sms_record where id = #{id}
+	</select>
+	
+	<select id="getList" parameterType="smsRecord" resultType="smsRecord" useCache="false">
+		select
+		*
+		from sms_record 
+		<where>
+			1=1
+			<if test="phone!=null and phone!=''">
+				and phone like concat('%',#{phone},'%')
+			</if>
+		</where>
+		order by createtime desc;
+	</select>
+	<select id="getCount" parameterType="smsRecord" resultType="long" useCache="false">
+		select count(*) from sms_record 
+		<where>
+			1=1 
+			<if test="phone!=null and phone!=''">
+				and phone like concat('%',#{phone},'%')
+			</if>
+		</where>
+	</select>
+	
+</mapper>

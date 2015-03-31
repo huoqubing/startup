@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="pushTagMapper">
+
+	<cache type="org.mybatis.caches.oscache.OSCache"/>
+
+	<insert id="add" parameterType="pushTag">
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into push_tag (tag,title,createtime,updatetime)
+		values (#{tag},#{title},#{createtime},#{updatetime})
+	</insert>
+
+	<delete id="deleteById" parameterType="int">
+		delete from push_tag where id
+		= #{id}
+	</delete>
+
+	<delete id="deleteByIds" parameterType="java.util.List">
+		delete from push_tag where id in
+		<foreach collection="list" index="index" item="id" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<update id="update" parameterType="pushTag" >
+		update push_tag
+		<set>
+			tag=#{tag},
+			title=#{title},
+			updatetime = #{updatetime}
+		</set>
+		where id = #{id}
+	</update>
+
+	<select id="getById" parameterType="int" resultType="pushTag" useCache="false">
+		select *
+		from push_tag where id = #{id}
+	</select>
+	
+	<select id="getList" parameterType="pushTag" resultType="pushTag" useCache="false">
+		select
+		*
+		from push_tag 
+		<where>
+			1=1 
+			<if test="tag!=null and tag!=''">
+				and tag like concat('%',#{tag},'%')
+			</if>
+			<if test="title!=null and title!=''">
+				and title like concat('%',#{title},'%')
+			</if>
+		</where>
+		order by updatetime desc;
+	</select>
+	<select id="getCount" parameterType="pushTag" resultType="long" useCache="false">
+		select count(*) from push_tag 
+		<where>
+			1=1 
+			<if test="tag!=null and tag!=''">
+				and tag like concat('%',#{tag},'%')
+			</if>
+			<if test="title!=null and title!=''">
+				and title like concat('%',#{title},'%')
+			</if>
+		</where>
+	</select>
+	
+</mapper>

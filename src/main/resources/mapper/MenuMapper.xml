@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="menuMapper">
+	<select id="getByLoginUser" resultType="menu" parameterType="user">
+		select 
+		*
+		from menu
+		<![CDATA[
+		where menuId in (select um.menuId from user_menu as um where um.userId=#{id}) and parent>0 order by `order` asc
+		]]>
+	</select>
+	
+	<select id="getList" resultType="menu">
+		select 
+		*
+		from menu
+		<where>
+			parent>0		
+		</where>
+	</select>
+	
+	<select id="getById" parameterType="int" resultType="menu" useCache="false">
+		select
+		*
+		from menu where menuId = #{id}
+	</select>
+</mapper>

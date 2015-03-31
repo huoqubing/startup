@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="privilegeMapper">
+	<select id="getList" resultType="privilege">
+		select 
+		*
+		from privilege
+		order by updatetime desc;
+	</select>
+	
+	<select id="getById" parameterType="int" resultType="privilege" useCache="false">
+		select
+		*
+		from privilege where id = #{id}
+	</select>
+</mapper>

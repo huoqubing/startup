@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="appVersionMapper">
+
+	<cache type="org.mybatis.caches.oscache.OSCache"/>
+	
+	<sql id="base_column">
+		id, type,version,downloadUrl,content,createTime,updateTime
+	</sql>
+
+	<insert id="add" parameterType="appVersion">
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into app_version (type,version,downloadUrl,content,createTime,updateTime)
+		values (#{type},#{version},#{downloadUrl},#{content},#{createTime},#{updateTime})
+	</insert>
+
+	<delete id="deleteById" parameterType="int">
+		delete from app_version where id
+		= #{id}
+	</delete>
+
+	<delete id="deleteByIds" parameterType="java.util.List">
+		delete from app_version where id in
+		<foreach collection="list" index="index" item="id" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<update id="update" parameterType="appVersion" >
+		update app_version
+		<set>
+			type = #{type},
+			downloadUrl = #{downloadUrl},
+			content = #{content},
+			version = #{version},
+			updateTime = #{updateTime}
+		</set>
+		where id = #{id}
+	</update>
+
+	<select id="getById" parameterType="int" resultType="appVersion" useCache="false">
+		select
+		<include refid="base_column" />
+		from app_version where id = #{id}
+	</select>
+	
+	<select id="getList" parameterType="appVersion" resultType="appVersion" useCache="false">
+		select
+		<include refid="base_column" />
+		from app_version 
+		<where>
+			1=1 
+			<if test="type != null and type != ''">
+				and type = #{type}
+			</if>
+			<if test="version != null and version != ''">
+				and version like concat('%',#{version},'%')
+			</if>
+		</where>
+		order by updateTime desc;
+	</select>
+	<select id="getCount" parameterType="appVersion" resultType="long" useCache="false">
+		select count(*) from app_version 
+		<where>
+			1=1 
+			<if test="type != null and type != ''">
+				and type = #{type}
+			</if>
+			<if test="version != null and version != ''">
+				and version like concat('%',#{version},'%')
+			</if>
+		</where>
+	</select>
+	
+</mapper>
