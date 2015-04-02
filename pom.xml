@@ -401,9 +401,9 @@
             </activation>
             <properties>
                 <db.driver>com.mysql.jdbc.Driver</db.driver>
-                <db.url>jdbc:mysql://121.40.129.218:3306/startup?useUnicode=true&amp;characterEncoding=UTF-8</db.url>
+                <db.url>jdbc:mysql://localhost:3306/startup?useUnicode=true&amp;characterEncoding=UTF-8</db.url>
                 <db.username>root</db.username>
-                <db.password>shen19870517</db.password>
+                <db.password>root</db.password>
             </properties>
         </profile>
 	</profiles>
